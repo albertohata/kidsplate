@@ -1,0 +1,41 @@
+name: Scrape Menu
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # every day at 06:00 UTC
+  workflow_dispatch:      # manual run
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        pip install requests beautifulsoup4
+
+    - name: Run scraper
+      run: python scripts/scrape.py
+
+    - name: Commit and push changes
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+
+        if [[ `git status --porcelain` ]]; then
+          git add data/menu_history.csv
+          git commit -m "Update weekly menu"
+          git push
+        else
+          echo "No changes detected"
+        fi
