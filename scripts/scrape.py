@@ -67,7 +67,7 @@ def load_existing_entries():
 def append_new_entries(new_entries):
     existing = load_existing_entries()
 
-    with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
+    with open(CSV_PATH, "a+", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["date", "meal_type", "meal_text"])
 
         for e in new_entries:
